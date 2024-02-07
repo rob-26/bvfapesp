@@ -1,9 +1,21 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
+import openpyxl
+
+#https://openpyxl.readthedocs.io/en/stable/api/openpyxl.worksheet.worksheet.html  documentação openpyxl
 
 def run():
 #função  principal
+
+
+
+### o que foi feito até agora:
+### o programa consegue ir até a página de mestrado, abrir as unidades da usp, refinar a pesquisa apenas para o primeiro item.
+### dificuldade em, aberto o primeiro item, prosseguir para o próximo e assim sucessivamente. também não é possível repetir o processo para outros programas.
+### pegar o número de bolsas dentro do gráfico é obscuro ainda também.
+
+
 
     with webdriver.Chrome() as driver:
 
@@ -44,12 +56,23 @@ def run():
             unidusp = driver.find_elements(By.XPATH, 
                 '/html/body/div[3]/div/div[2]/div/div[2]/section[2]/div[1]/form/ul/div[4]/ul/div/li/ul/li[10]/ul/li[67]/ul/li/input')
             time.sleep(3)
+            #POR ENQUANTO SÓ FUNCIONA PARA O MESTRADO!!
+
+            ##/html/body/div[3]/div/div[2]/div/div[2]/section[2]/div[1]/form/ul/div[4]/ul/div/li/ul/li[10]/ul/li[67]/ul/li[1]/input
+            ##/html/body/div[3]/div/div[2]/div/div[2]/section[2]/div[2]/form/ul/div[4]/ul/div/li/ul/li[10]/ul/li[67]/ul/li[2]/input
+            ##/html/body/div[3]/div/div[2]/div/div[2]/section[2]/div[2]/form/ul/div[4]/ul/div/li/ul/li[10]/ul/li[67]/ul/li[3]/input
+
 
             for unidade in unidusp:
                 unidade.click()
-                time.sleep(1)
+                time.sleep(2)
+                refino = driver.find_element(By.XPATH, '//body/div[3]/div/div[2]/div/div[2]/section[2]/div[1]/form/ul/div[4]/li[2]/input')
+                refino.click()
+                time.sleep(5)
                 unidade.click()
-                time.sleep(1)
+                time.sleep(2)
+
+                #refina
 
             ######ALGORITMO DE ABRE E FECHA
             '''
@@ -104,6 +127,46 @@ def run():
 
 
 
+def planilhar_dados():
+#rascunho do recurso de pegar numero de bolsas e colocar em planilha
+    
+    with webdriver.Chrome() as driver:
+        driver.get('https://bv.fapesp.br/pt/')
+        time.sleep(3)
+
+        navbar = driver.find_element(By.XPATH, '//*[@id="navbarNavDropdown"]/ul')
+
+        texto = navbar.find_elements(By.XPATH, '//li/a/b')
+        
+        lista = []
+
+        for elemento in texto:
+            lista.append(elemento.text)
+            time.sleep(1)
+        
+        planilha = openpyxl.Workbook()
+        sheet = planilha.active
+
+        i = 1
+        for elemento in lista:
+            sheet['A{}'.format(i)] = elemento
+            i += 1
+            
+        planilha.save('hello.xlsx')
+
+        
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
-    run()
+    #run()
+    planilhar_dados()
 
