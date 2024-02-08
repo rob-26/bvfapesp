@@ -47,26 +47,15 @@ def run():
         refino.click()
         time.sleep(5)
         
-        while m != 59:
+        #/html/body/div[3]/div/div[6]/section/div/div[1]/svg/g/g[23]/rect[2]    RETANGULO COM BOLSAS
+        retangulo = driver.find_element(By.XPATH, '//body/div[3]/div/div[6]/section/div/div[1]/*[name()="svg" and @class = "svg-content"]/*[name()="g"]/*[name()="g"][23]/*[local-name()="rect"][2]')
+        time.sleep(1.5)
+        retangulo.click()
+        time.sleep(2)
 
-            unid = driver.find_element(By.XPATH, '//body/div[3]/div/div[2]/div/div[2]/section[2]/div[2]/form/ul/div[4]/ul/div/li/ul/li[10]/ul/li[67]/ul/li[{}]/input'.format(m))
-            time.sleep(0.5)
-            unid.click()
-            m += 1
-            time.sleep(1)
-            unid = driver.find_element(By.XPATH, '//body/div[3]/div/div[2]/div/div[2]/section[2]/div[2]/form/ul/div[4]/ul/div/li/ul/li[10]/ul/li[67]/ul/li[{}]/input'.format(m))
-            time.sleep(0.5)
-            unid.click()
-            time.sleep(2)
-
-            refino = driver.find_element(By.XPATH, '//body/div[3]/div/div[2]/div/div[2]/section[2]/div[2]/form/ul/div[4]/li[2]/input')
-            time.sleep(0.5)
-            refino.click()
-            time.sleep(5)
-            #refina
-        #itera sobre cada instituto
-    
-
+        num_bolsas = driver.find_element(By.XPATH, '//body/div[6]/span')
+        text_bolsas = num_bolsas.text
+        print(text_bolsas)
 
         
 
