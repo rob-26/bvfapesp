@@ -621,8 +621,23 @@ def run():
     time.sleep(3)
 
 
+    planilha = openpyxl.Workbook()
+    sheet = planilha.active
 
-   
+    sheet['A1'] = 'Unidade'
+    sheet['B1'] = 'Bolsas mestrado'
+
+    i = 2
+    for elemento in nome_instituto:
+        sheet['A{}'.format(i)] = elemento
+        i += 1
+
+    j = 2
+    for elemento in num_de_bolsas:
+        sheet['B{}'.format(j)] = elemento
+        j += 1
+
+
 
 
 
