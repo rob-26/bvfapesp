@@ -137,8 +137,131 @@ def mestrado():
 
     #escrever na planilha: criar workbook, criar planilha e salvar depois da escrita
 
+
+def doutorado():
+
+    driver = webdriver.Firefox()
+    driver.get(dominio)
+    driver.maximize_window()
+    time.sleep(2)
+    #abre o site da biblioteca virtual
+
+    d = 1
+    
+    fomento = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, 'dropdown')))
+    fomento.click()
+    #abre o item de fomento à pesquisa
+    
+    pg = WebDriverWait(driver,15).until(EC.presence_of_element_located((By.LINK_TEXT, 'Doutorado')))
+    pg.click()
+    #abre a página de cada programa
+
+    inst = WebDriverWait(driver,15).until(EC.presence_of_element_located((By.ID, 'pivot_expand_instfacet')))
+    inst.click()
+    #abre instituições sede
+
+    a1 = WebDriverWait(driver,15).until(EC.presence_of_element_located((By.XPATH, '//li[@id="pivot_expand_Universidades"]/a')))
+    a1.click()
+    time.sleep(2)
+    a2 = WebDriverWait(driver,15).until(EC.presence_of_element_located((By.XPATH, '//li[@id="pivot_expand_UniversidadedeSoPauloUSP"]/a')))
+    a2.click()
+    #abre as instuituiçoes de ensino da usp
+
+    nome_instituto = []
+    num_de_bolsas = []
+    #listas para colocar informações a planilhar
+
+    unid = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH, 
+        '//*[@id="34_checkbox_UniversidadesUniversidadedeSoPauloUSPCentrodeBiologiaMarinhaCEBIMAR"]')))
+    time.sleep(0.5)
+    unid.click()
+    refino = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,
+         '//body/div[3]/div/div[2]/div/div[2]/section[2]/div[1]/form/ul/div[4]/li[2]/input')))
+    refino.click()
+    time.sleep(5)
+    #abre a primeira unidade
+    
+    ni = WebDriverWait(driver,15).until(EC.presence_of_element_located((
+        By.XPATH, '//*[@id="conteudo"]/div[2]/div/div[1]/section/div[1]/span')))
+    nome_instituto.append(ni.text[19:])
+    len_anterior = len(ni.text[19:])
+    retangulo = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH, '//body/div[3]/div/div[6]/section/div/div[1]/*[name()="svg" and @class = "svg-content"]/*[name()="g"]/*[name()="g"][16]/*[local-name()="rect"][2]')))
+    time.sleep(1.5)
+    verifica_nulo = retangulo.get_attribute('height')
+    if verifica_nulo == '0':
+        text_bolsas = 'Bolsas: 0'
+    else:
+        retangulo.click()
+        time.sleep(2)
+        num_bolsas = driver.find_element(By.XPATH, '//body/div[6]/span')
+        text_bolsas = num_bolsas.text
+    num_temp = int(text_bolsas[8:])
+    num_de_bolsas.append(num_temp)
+    #pega nome e numero de bolsas da primeira unidade
+
+    while d != 58: # itera sobre todas as unidades
+        
+        d += 1
+        time.sleep(3)
+        somatorio = num_temp
+        
+        unid = WebDriverWait(driver,15).until(EC.presence_of_element_located((By.XPATH,
+            '//li[@id = "pivot_expand_UniversidadedeSoPauloUSP"]/ul/li[{}]/input'.format(d))))
+        time.sleep(1)
+        unid.click()
+
+        refino = WebDriverWait(driver,15).until(EC.presence_of_element_located((By.XPATH,
+            '//div[@id="refinamento_instfacet"]/li[2]/input')))
+        time.sleep(1)
+        refino.click()
+        time.sleep(1)
+
+        ni = WebDriverWait(driver,15).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="conteudo"]/div[2]/div/div[1]/section/div[1]/span')))
+        nome_instituto.append(ni.text[len_anterior + 3:])
+        len_anterior = len(ni.text)
+        
+        retangulo = WebDriverWait(driver,15).until(
+            EC.presence_of_element_located((By.XPATH, '//body/div[3]/div/div[6]/section/div/div[1]/*[name()="svg" and @class = "svg-content"]/*[name()="g"]/*[name()="g"][34]/*[local-name()="rect"][2]')))
+        time.sleep(1.5)
+        verifica_nulo = retangulo.get_attribute('height')
+        if verifica_nulo == '0':
+            text_bolsas = 'Bolsas: 0'
+        else:
+            retangulo.click()
+            time.sleep(1)
+            num_bolsas = WebDriverWait(driver,10).until(
+                EC.presence_of_element_located((By.XPATH, '//body/div[@class = "d3-tip n"]/span')))
+            text_bolsas = num_bolsas.text
+            time.sleep(1)
+        num_temp = int(text_bolsas[8:])
+
+        num_final = num_temp - somatorio    
+        num_de_bolsas.append(num_final)
+    
+    planilha = load_workbook(filename = 'Bolsas Fapesp_final.xlsx')
+    sheet = planilha.active
+
+    sheet['A1'] = 'Unidade'
+    sheet['B1'] = 'Bolsas mestrado'
+
+    i = 2
+    for elemento in nome_instituto:
+        sheet['A{}'.format(i)] = elemento
+        i += 1
+
+    j = 2
+    for elemento in num_de_bolsas:
+        sheet['B{}'.format(j)] = elemento
+        j += 1
+
+    planilha.save('Bolsas Fapesp_final.xlsx')
+    input()
+
+
         
 if __name__ == '__main__':
-    mestrado()
+    #mestrado()
+    doutorado()
    
 
