@@ -12,6 +12,13 @@ def run():
 #função  principal
 
 
+    '''
+    Quase tudo está funcionando. O problema é quando entra nos laços, o programa consegue acessar
+    poucas unidades antes de não conseguir mais acessar o div do número de bolsas.
+    
+    '''
+
+
 
     driver = webdriver.Firefox()
     driver.get('https://bv.fapesp.br/pt/')
